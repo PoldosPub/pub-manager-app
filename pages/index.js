@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 
-
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [tables, setTables] = useState(
@@ -18,18 +17,22 @@ export default function Home() {
     "Pizza"
   ];
 
-  const addOrder = (tableIndex, item) => {
-    const newTables = [...tables];
-    newTables[tableIndex].orders.push({ item, id: Date.now() });
-    setTables(newTables);
+  const addOrder = (item) => {
+    if (selectedTable !== null) {
+      const newTables = [...tables];
+      newTables[selectedTable].orders.push({ item, id: Date.now() });
+      setTables(newTables);
+    }
   };
 
-  const removeOrder = (tableIndex, orderId) => {
-    const newTables = [...tables];
-    newTables[tableIndex].orders = newTables[tableIndex].orders.filter(
-      order => order.id !== orderId
-    );
-    setTables(newTables);
+  const removeOrder = (orderId) => {
+    if (selectedTable !== null) {
+      const newTables = [...tables];
+      newTables[selectedTable].orders = newTables[selectedTable].orders.filter(
+        order => order.id !== orderId
+      );
+      setTables(newTables);
+    }
   };
 
   function LoginScreen({ onLogin }) {
@@ -71,52 +74,58 @@ export default function Home() {
 
   function PubOrderApp() {
     return (
-      <div className="p-4 min-h-screen bg-gray-50">
+      <div className="max-w-4xl mx-auto p-4">
         <h1 className="text-2xl font-bold mb-6">Gestione Ordini Pub</h1>
         
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-6">
+        {/* Griglia Tavoli */}
+        <div className="grid grid-cols-2 gap-4 mb-6">
           {tables.map((table, index) => (
-            <div
+            <button
               key={index}
-              className={`p-4 bg-white border rounded-lg cursor-pointer transition-colors ${
-                selectedTable === index ? 'ring-2 ring-blue-500 bg-blue-50' : 'hover:bg-gray-50'
-              }`}
               onClick={() => setSelectedTable(index)}
+              className={`p-4 text-left border rounded-lg ${
+                selectedTable === index 
+                  ? 'bg-blue-100 border-blue-500' 
+                  : 'bg-white hover:bg-gray-50'
+              }`}
             >
               <h2 className="font-bold">Tavolo {index + 1}</h2>
               <p className="text-gray-600">Ordini: {table.orders.length}</p>
-            </div>
+            </button>
           ))}
         </div>
 
+        {/* Sezione Ordini */}
         {selectedTable !== null && (
-          <div className="mt-4 bg-white p-6 rounded-lg shadow">
+          <div className="mt-6 bg-white p-4 rounded-lg border">
             <h2 className="text-xl font-bold mb-4">
               Ordini Tavolo {selectedTable + 1}
             </h2>
             
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mb-4">
+            {/* Menu Items */}
+            <div className="grid grid-cols-2 gap-2 mb-6">
               {menuItems.map((item, index) => (
                 <button
                   key={index}
-                  className="p-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
-                  onClick={() => addOrder(selectedTable, item)}
+                  onClick={() => addOrder(item)}
+                  className="p-3 bg-green-500 text-white rounded-lg hover:bg-green-600"
                 >
                   {item}
                 </button>
               ))}
             </div>
 
-            <div className="space-y-2 mt-6">
+            {/* Lista Ordini */}
+            <div className="space-y-2">
               {tables[selectedTable].orders.map((order) => (
                 <div 
-                  key={order.id} 
-                  className="flex justify-between items-center p-3 border rounded-lg bg-gray-50"
+                  key={order.id}
+                  className="flex justify-between items-center p-3 bg-gray-50 rounded-lg"
                 >
-                  <span className="font-medium">{order.item}</span>
+                  <span>{order.item}</span>
                   <button
-                    className="text-red-500 hover:text-red-600 transition-colors"
-                    onClick={() => removeOrder(selectedTable, order.id)}
+                    onClick={() => removeOrder(order.id)}
+                    className="text-red-500 hover:text-red-600 px-3 py-1"
                   >
                     Elimina
                   </button>
