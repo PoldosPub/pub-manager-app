@@ -1,12 +1,39 @@
 import React, { useState } from 'react';
 
 export default function Home() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [tables, setTables] = useState(Array(10).fill().map(() => ({ orders: [] })));
+  const [selectedTable, setSelectedTable] = useState(null);
+
+  const menuItems = [
+    "Birra Media",
+    "Birra Piccola",
+    "Coca Cola",
+    "Acqua",
+    "Patatine",
+    "Hamburger",
+    "Pizza"
+  ];
+
+  const addOrder = (tableIndex, item) => {
+    const newTables = [...tables];
+    newTables[tableIndex].orders.push({ item, id: Date.now() });
+    setTables(newTables);
+  };
+
+  const removeOrder = (tableIndex, orderId) => {
+    const newTables = [...tables];
+    newTables[tableIndex].orders = newTables[tableIndex].orders.filter(
+      order => order.id !== orderId
+    );
+    setTables(newTables);
+  };
+
   const LoginScreen = ({ onLogin }) => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
     const handleLogin = () => {
-      // Password per accedere all'app
       if (password === '123456') {
         onLogin();
       } else {
@@ -39,18 +66,12 @@ export default function Home() {
     );
   };
 
-  const PubOrderApp = () => {
-    const [tables, setTables] = useState(Array(10).fill().map(() => ({ orders: [] })));
-    const [selectedTable, setSelectedTable] = useState(null);
-
-    const menuItems = [
-      "Birra Media",
-      "Birra Piccola",
-      "Coca Cola",
-      "Acqua",
-      "Patatine",
-      "Hamburger",
-      "Pizza"
-    ];
-
-    const addOrder = (tableIndex, item) =>
+  const PubOrderApp = () => (
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-6">Gestione Ordini Pub</h1>
+      
+      <div className="grid grid-cols-2 gap-4 mb-6">
+        {tables.map((table, index) => (
+          <div
+            key={index}
+            c
